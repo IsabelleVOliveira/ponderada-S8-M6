@@ -2,6 +2,13 @@
 
 Desenvolvido por Isabelle Beatriz Vasquez Oliveira
 
+## Requisitos
+
+Certifique-se de ter os seguintes requisitos instalados:
+
+- Python 3
+- Bibliotecas: numpy, matplotlib
+
 Esse repositório contém a implementação de um MLP para resolver o problema do XOR utilizando uma rede neural implementada manualmente e utilizando PyTorch.
 
 Para executar a implementação manual da rede neural XOR, use o seguinte comando: `python3 mplV2.py`
