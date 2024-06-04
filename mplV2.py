@@ -38,7 +38,7 @@ class Perceptron:
 
         return self.output
     
-    def train(self, training, answers, epochs=9000):
+    def train(self, training, answers, epochs=10000):
         for epoch in range(epochs):
             for inputs, answer in zip(training, answers):
                 # Passagem direta para obter a saída
@@ -54,27 +54,21 @@ class Perceptron:
                 grad_hidden_layer = final_hidden_layer * self._sigmoid_derivative(self.hidden_layer_output)
 
                 # Atualiza os pesos e os vieses usando o gradiente descendente
-                self.weights_output += np.dot(self.hidden_layer_output[:, np.newaxis], grad_final[np.newaxis, :]) * self.learning_rate
+                self.weights_output += self.hidden_layer_output.reshape(-1, 1) @ grad_final.reshape(1, -1) * self.learning_rate
                 self.output_bias += grad_final * self.learning_rate
 
-                self.weights_input += np.dot(np.array(inputs)[:, np.newaxis], grad_hidden_layer[np.newaxis, :]) * self.learning_rate
+                self.weights_input += inputs.reshape(-1, 1) @ grad_hidden_layer.reshape(1, -1) * self.learning_rate
                 self.bias += grad_hidden_layer * self.learning_rate
 
             if epoch % 1000 == 0:
                 # Avalia o desempenho do modelo a cada 1000 épocas
-                predictions, _ = self.predict(training)
+                predictions = self.predict(training)
                 mse = self._mse(predictions, answers)
                 print(f'Epoch: {epoch}, MSE: {mse}')
 
     def predict(self, inputs):
-        predictions = []
-        binary_predictions = []
-        for inp in inputs:
-            # Faz a previsão para cada entrada
-            output = self.forward_pass(inp)
-            predictions.append(output)
-            binary_predictions.append(1 if output >= 0.5 else 0)
-        return np.array(predictions).reshape(-1, 1), np.array(binary_predictions).reshape(-1, 1)
+        # Faz previsões para cada entrada
+        return np.array([self.forward_pass(inp) for inp in inputs])
     
     def _mse(self, predictions, targets):
         # Calcula o erro médio quadrático
@@ -101,13 +95,13 @@ def main():
     perceptron.train(training, answers)
     
     # Faz previsões e calcula o erro final
-    predictions, binary_predictions = perceptron.predict(training)
+    predictions = perceptron.predict(training)
     mse = perceptron._mse(predictions, answers)
     print(f'Final MSE: {mse}')
     print('Predições:')
     print(predictions)
     print('Predição final:')
-    print(binary_predictions)
+    print(np.round(predictions).astype(int))
 
 if __name__ == "__main__":
     main()
